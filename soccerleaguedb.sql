@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 03, 2024 at 09:08 PM
+-- Generation Time: Jun 03, 2024 at 10:31 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -59,16 +59,16 @@ CREATE TABLE `teams` (
 --
 
 INSERT INTO `teams` (`TeamId`, `Name`, `IsGrand`, `GoalsFor`, `GoalsAgainst`, `Wins`, `Draws`, `Losses`, `Points`) VALUES
-(1, 'Team Arsenal', 1, 32, 10, 16, 9, 14, 23),
-(2, 'Barnsley', 1, 95, 7, 15, 6, 1, 37),
-(3, 'Team Aston Villa', 0, 68, 29, 12, 3, 13, 84),
-(4, 'Team Barnsley', 0, 17, 36, 8, 5, 10, 75),
-(5, 'Team Brentford', 0, 25, 99, 6, 2, 0, 73),
-(6, 'Team Chelsea', 1, 59, 76, 0, 16, 19, 52),
-(7, 'Team Everton', 0, 65, 69, 14, 7, 9, 20),
-(8, 'Team Liverpool', 1, 58, 32, 26, 7, 4, 8),
-(9, 'Team Manchester City', 1, 70, 28, 9, 13, 9, 22),
-(10, 'Team Manchester United', 1, 79, 28, 1, 7, 14, 58);
+(1, 'Team Arsenal', 1, 0, 0, 0, 0, 0, 0),
+(2, 'Team Southampton', 1, 0, 0, 0, 0, 0, 0),
+(3, 'Team Aston Villa', 0, 0, 0, 0, 0, 0, 0),
+(4, 'Team Barnsley', 0, 0, 0, 0, 0, 0, 0),
+(5, 'Team Brentford', 0, 0, 0, 0, 0, 0, 0),
+(6, 'Team Chelsea', 1, 0, 0, 0, 0, 0, 0),
+(7, 'Team Everton', 0, 0, 0, 0, 0, 0, 0),
+(8, 'Team Liverpool', 1, 0, 0, 0, 0, 0, 0),
+(9, 'Team Manchester City', 1, 0, 0, 0, 0, 0, 0),
+(10, 'Team Manchester United', 1, 0, 0, 0, 0, 0, 0);
 
 --
 -- Indexes for dumped tables
@@ -96,7 +96,7 @@ ALTER TABLE `teams`
 -- AUTO_INCREMENT for table `matches`
 --
 ALTER TABLE `matches`
-  MODIFY `MatchId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=181;
+  MODIFY `MatchId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=811;
 
 --
 -- AUTO_INCREMENT for table `teams`
