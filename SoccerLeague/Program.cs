@@ -17,7 +17,19 @@ namespace SoccerLeague
             optionsBuilder.UseMySQL("Server=localhost;Database=soccerleaguedb;user=root;password=;");
             using (var context = new SoccerLeagueContext(optionsBuilder.Options))
             {
+
                 Console.WriteLine("Soccer League Simulator");
+                Console.WriteLine("Select fill mode (Manual/Automatic data fill): ");
+                Console.Write("Write 'automatic' for auto fill or 'manual' for manual fill: ");
+                string mode = Console.ReadLine().ToLower();
+                if (mode == "manual")
+                {
+                    EditTeamManually(context);
+                }
+                if (mode == "automatic")
+                {
+                    EditTeamAutomatically(context);
+                } 
                 SimulateLeague(context);
                 context.Matches.RemoveRange(context.Matches);
                 context.SaveChanges();
@@ -95,6 +107,68 @@ namespace SoccerLeague
             {
                 Console.WriteLine($"{team.Name}: {team.Points} points, {team.GoalsFor} goals for, {team.GoalsAgainst} goals against");
             }
+        }
+        static void EditTeamManually(SoccerLeagueContext context)
+        {
+            /*Console.Write("Enter team ID to edit: ");
+            int teamId = int.Parse(Console.ReadLine());*/
+            for (int i = 1; i < 10; i++)
+            {
+                var team = context.Teams.Find(i);
+                if (team == null)
+                {
+                    Console.WriteLine("Team not found!");
+                    return;
+                }
+                Console.WriteLine(team.Name);
+                Console.Write("Enter Goals For: ");
+                team.GoalsFor = int.Parse(Console.ReadLine());
+
+                Console.Write("Enter Goals Against: ");
+                team.GoalsAgainst = int.Parse(Console.ReadLine());
+
+                Console.Write("Enter Wins: ");
+                team.Wins = int.Parse(Console.ReadLine());
+
+                Console.Write("Enter Draws: ");
+                team.Draws = int.Parse(Console.ReadLine());
+
+                Console.Write("Enter Losses: ");
+                team.Losses = int.Parse(Console.ReadLine());
+
+                Console.Write("Enter Points: ");
+                team.Points = int.Parse(Console.ReadLine());
+
+                context.SaveChanges();
+                Console.WriteLine("Team updated successfully!");
+            }
+
+            
+        }
+        static void EditTeamAutomatically(SoccerLeagueContext context)
+        {
+            
+            for (int i = 1; i < 10; i++)
+            {
+                var team = context.Teams.Find(i);
+                if (team == null)
+                {
+                    Console.WriteLine("Team not found!");
+                    return;
+                }
+
+                Random rand = new Random();
+                team.GoalsFor = rand.Next(0, 6);
+                team.GoalsAgainst = rand.Next(0, 5);
+                team.Wins = team.GoalsFor > team.GoalsAgainst ? 1 : 0;
+                team.Draws = team.GoalsFor == team.GoalsAgainst ? 1 : 0;
+                team.Losses = team.GoalsFor < team.GoalsAgainst ? 1 : 0;
+                team.Points = team.Wins * 3 + team.Draws;
+
+                context.SaveChanges();
+                Console.WriteLine("Team updated automatically!");
+            }
+            
         }
     }
 }
