@@ -37,14 +37,15 @@ namespace SoccerLeague
         static void SimulateLeague(SoccerLeagueContext context)
         {
             var teams = context.Teams.ToList();
-            int numberOfRounds = (teams.Count - 1) * 2; 
+            var matches = GenerateRoundRobin(teams);
 
-            for (int round = 1; round <= numberOfRounds; round++)
+            for (int round = 1; round <= matches.Count; round++)
             {
                 Console.WriteLine($"Round {round}");
-                foreach (var match in GenerateMatches(round, teams, context))
+                foreach (var match in matches[round - 1])
                 {
                     context.Matches.Add(match);
+                    UpdateTeamStats(match, context);
                     Console.WriteLine($"{match.HomeTeam.Name} {match.HomeGoals} - {match.AwayGoals} {match.AwayTeam.Name}");
                 }
                 context.SaveChanges();
@@ -73,31 +74,38 @@ namespace SoccerLeague
             };
         }
 
-        static List<SoccerLeague.Models.Match> GenerateMatches(int round, List<Team> teams, SoccerLeagueContext context)
+        static List<List<SoccerLeague.Models.Match>> GenerateRoundRobin(List<Team> teams)
         {
-            var matches = new List<SoccerLeague.Models.Match>();
-            int n = teams.Count;
-            var roundTeams = new List<Team>(teams);
-
-            if (round > n - 1)
+            if (teams.Count % 2 != 0)
             {
-                round -= n - 1;
-                roundTeams.Reverse();
+                teams.Add(new Team { Name = "BYE" }); // Add a dummy team if the number of teams is odd
             }
 
-            for (int i = 0; i < n / 2; i++)
+            int numTeams = teams.Count;
+            int numRounds = numTeams - 1;
+            List<List<SoccerLeague.Models.Match>> rounds = new List<List<SoccerLeague.Models.Match>>();
+
+            for (int round = 0; round < numRounds; round++)
             {
-                int homeIndex = (round + i) % (n - 1);
-                int awayIndex = (n - 1 - i + round) % (n - 1);
+                List<SoccerLeague.Models.Match> roundMatches = new List<SoccerLeague.Models.Match>();
+                for (int i = 0; i < numTeams / 2; i++)
+                {
+                    int home = (round + i) % (numTeams - 1);
+                    int away = (numTeams - 1 - i + round) % (numTeams - 1);
+                    if (i == 0)
+                    {
+                        away = numTeams - 1;
+                    }
 
-                if (i == 0)
-                    awayIndex = n - 1;
-
-                var match = GenerateMatch(roundTeams[homeIndex], roundTeams[awayIndex]);
-                UpdateTeamStats(match, context);
-                matches.Add(match);
+                    if (teams[home].Name != "BYE" && teams[away].Name != "BYE")
+                    {
+                        roundMatches.Add(GenerateMatch(teams[home], teams[away]));
+                    }
+                }
+                rounds.Add(roundMatches);
             }
-            return matches;
+
+            return rounds;
         }
 
         static void UpdateTeamStats(SoccerLeague.Models.Match match, SoccerLeagueContext context)
