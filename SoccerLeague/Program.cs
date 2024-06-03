@@ -3,21 +3,18 @@ using SoccerLeague.Data;
 using SoccerLeague.Models;
 using System;
 using System.Collections.Generic;
-using System.Configuration.Provider;
 using System.Linq;
-using System.Xml.Linq;
 
 namespace SoccerLeague
 {
     class Program
     {
         static void Main(string[] args)
-        {  
+        {
             var optionsBuilder = new DbContextOptionsBuilder<SoccerLeagueContext>();
             optionsBuilder.UseMySQL("Server=localhost;Database=soccerleaguedb;user=root;password=;");
             using (var context = new SoccerLeagueContext(optionsBuilder.Options))
             {
-
                 Console.WriteLine("Soccer League Simulator");
                 Console.WriteLine("Select fill mode (Manual/Automatic data fill): ");
                 Console.Write("Write 'automatic' for auto fill or 'manual' for manual fill: ");
@@ -29,23 +26,23 @@ namespace SoccerLeague
                 if (mode == "automatic")
                 {
                     EditTeamAutomatically(context);
-                } 
+                }
                 SimulateLeague(context);
                 context.Matches.RemoveRange(context.Matches);
+                DelTeamsData(context);
                 context.SaveChanges();
             }
-            
         }
 
         static void SimulateLeague(SoccerLeagueContext context)
         {
             var teams = context.Teams.ToList();
-            int numberOfRounds = teams.Count - 1;
+            int numberOfRounds = (teams.Count - 1) * 2; 
 
             for (int round = 1; round <= numberOfRounds; round++)
             {
                 Console.WriteLine($"Round {round}");
-                foreach (var match in GenerateMatches(round, teams))
+                foreach (var match in GenerateMatches(round, teams, context))
                 {
                     context.Matches.Add(match);
                     Console.WriteLine($"{match.HomeTeam.Name} {match.HomeGoals} - {match.AwayGoals} {match.AwayTeam.Name}");
@@ -53,7 +50,6 @@ namespace SoccerLeague
                 context.SaveChanges();
                 PrintStandings(context);
             }
-            
         }
 
         static SoccerLeague.Models.Match GenerateMatch(Team homeTeam, Team awayTeam)
@@ -77,10 +73,18 @@ namespace SoccerLeague
             };
         }
 
-        static List<SoccerLeague.Models.Match> GenerateMatches(int round, List<Team> teams)
+        static List<SoccerLeague.Models.Match> GenerateMatches(int round, List<Team> teams, SoccerLeagueContext context)
         {
             var matches = new List<SoccerLeague.Models.Match>();
             int n = teams.Count;
+            var roundTeams = new List<Team>(teams);
+
+            if (round > n - 1)
+            {
+                round -= n - 1;
+                roundTeams.Reverse();
+            }
+
             for (int i = 0; i < n / 2; i++)
             {
                 int homeIndex = (round + i) % (n - 1);
@@ -89,9 +93,45 @@ namespace SoccerLeague
                 if (i == 0)
                     awayIndex = n - 1;
 
-                matches.Add(GenerateMatch(teams[homeIndex], teams[awayIndex]));
+                var match = GenerateMatch(roundTeams[homeIndex], roundTeams[awayIndex]);
+                UpdateTeamStats(match, context);
+                matches.Add(match);
             }
             return matches;
+        }
+
+        static void UpdateTeamStats(SoccerLeague.Models.Match match, SoccerLeagueContext context)
+        {
+            var homeTeam = match.HomeTeam;
+            var awayTeam = match.AwayTeam;
+
+            homeTeam.GoalsFor += match.HomeGoals;
+            homeTeam.GoalsAgainst += match.AwayGoals;
+            awayTeam.GoalsFor += match.AwayGoals;
+            awayTeam.GoalsAgainst += match.HomeGoals;
+
+            if (match.HomeGoals > match.AwayGoals)
+            {
+                homeTeam.Wins++;
+                homeTeam.Points += 3;
+                awayTeam.Losses++;
+            }
+            else if (match.HomeGoals < match.AwayGoals)
+            {
+                awayTeam.Wins++;
+                awayTeam.Points += 3;
+                homeTeam.Losses++;
+            }
+            else
+            {
+                homeTeam.Draws++;
+                awayTeam.Draws++;
+                homeTeam.Points++;
+                awayTeam.Points++;
+            }
+
+            context.Teams.Update(homeTeam);
+            context.Teams.Update(awayTeam);
         }
 
         static void PrintStandings(SoccerLeagueContext context)
@@ -108,10 +148,9 @@ namespace SoccerLeague
                 Console.WriteLine($"{team.Name}: {team.Points} points, {team.GoalsFor} goals for, {team.GoalsAgainst} goals against");
             }
         }
+
         static void EditTeamManually(SoccerLeagueContext context)
         {
-            /*Console.Write("Enter team ID to edit: ");
-            int teamId = int.Parse(Console.ReadLine());*/
             for (int i = 1; i < 10; i++)
             {
                 var team = context.Teams.Find(i);
@@ -142,13 +181,11 @@ namespace SoccerLeague
                 context.SaveChanges();
                 Console.WriteLine("Team updated successfully!");
             }
-
-            
         }
+
         static void EditTeamAutomatically(SoccerLeagueContext context)
         {
-            
-            for (int i = 1; i < 10; i++)
+            for (int i = 1; i <=10; i++)
             {
                 var team = context.Teams.Find(i);
                 if (team == null)
@@ -168,7 +205,24 @@ namespace SoccerLeague
                 context.SaveChanges();
                 Console.WriteLine("Team updated automatically!");
             }
-            
+        }
+        static void DelTeamsData(SoccerLeagueContext context)
+        {
+            for (int i = 1; i <= 10; i++)
+            {
+                var team = context.Teams.Find(i);
+
+
+
+                team.GoalsFor = 0;
+                team.GoalsAgainst = 0;
+                team.Wins = 0;
+                team.Draws = 0;
+                team.Losses = 0;
+                team.Points = 0;
+
+                context.SaveChanges();     
+            }
         }
     }
 }
