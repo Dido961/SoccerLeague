@@ -20,17 +20,22 @@ namespace SoccerLeague
                 context.Matches.RemoveRange(context.Matches);
                 DelTeamsData(context);
                 context.SaveChanges();
-                Console.WriteLine("Soccer League Simulator");
+                Console.WriteLine("Soccer League Simulator".ToUpper());
+                Console.WriteLine("Premier League tournament started. . .");
                 Console.WriteLine("Select fill mode (Manual/Automatic data fill): ");
-                Console.Write("Write 'automatic' for auto fill or 'manual' for manual fill: ");
-                string mode = Console.ReadLine().ToLower();
-                if (mode == "manual")
+                while (true) 
                 {
-                    EditTeamManually(context);
-                }
-                if (mode == "automatic")
-                {
-                    EditTeamAutomatically(context);
+                    Console.Write("Write 'auto' for auto fill or 'manual' for manual fill: ");
+                    string mode = Console.ReadLine().ToLower();
+                    if (mode == "manual")
+                    {
+                        EditTeamManually(context); break;
+                    }
+                    else if (mode == "auto")
+                    {
+                        EditTeamAutomatically(context); break;
+                    }
+                    
                 }
                 SimulateLeague(context);
                 context.Matches.RemoveRange(context.Matches);
@@ -56,6 +61,29 @@ namespace SoccerLeague
                 context.SaveChanges();
                 while (true)
                 {
+                    if (round == 9)
+                    {
+                        Thread.Sleep(2000);
+                        Console.WriteLine("Premier League tournament ended!");
+                        Thread.Sleep(2000);
+                        Console.WriteLine(); Console.WriteLine();
+                        Console.Write("Loading final result . . .");
+                        Console.WriteLine(); Console.WriteLine();
+                        Thread.Sleep(3000);
+                        Action1(context); Console.WriteLine(); Console.WriteLine(); Console.Write("Loading next results . . .");
+                        Console.WriteLine(); Console.WriteLine();
+                        Thread.Sleep(5000);
+                        Action2(context); Console.WriteLine(); Console.WriteLine(); Console.Write("Loading next results . . .");
+                        Console.WriteLine(); Console.WriteLine();
+                        Thread.Sleep(5000);
+                        Action3(context); Console.WriteLine(); Console.WriteLine(); Console.Write("Loading next results . . .");
+                        Console.WriteLine(); Console.WriteLine();
+                        Thread.Sleep(2000);
+                        Console.WriteLine(); Console.WriteLine();
+                        Thread.Sleep(1000);
+                        Console.Write("Press any key to exit the app . . .");
+                        Console.ReadLine(); return;
+                    }
                     Console.Write("Select action (1, 2, 3). To continue forward without any action just hit enter -> ");
                     string act = Console.ReadLine().ToLower();
                     if (act == "1")
@@ -71,7 +99,7 @@ namespace SoccerLeague
                         Action3(context);
                     }
                     else if (act == "") break;
-
+                    
                 }
                 
             }
@@ -165,22 +193,6 @@ namespace SoccerLeague
             context.Teams.Update(homeTeam);
             context.Teams.Update(awayTeam);
         }
-
-        /*static void Action1(SoccerLeagueContext context)
-        {
-            var standings = context.Teams
-                .OrderByDescending(t => t.Points)
-                .ThenByDescending(t => t.GoalsFor - t.GoalsAgainst)
-                .ThenByDescending(t => t.GoalsFor)
-                .ToList();
-
-            Console.WriteLine("Standings:");
-            int place = 1;
-            foreach (var team in standings)
-            {
-                Console.WriteLine($"{team.Name} place: {place++} goals for:{team.GoalsFor} goals against:{team.GoalsAgainst} wins:{team.Wins} draws:{team.Draws} losses:{team.Losses} points:{team.Points}");
-            }
-        }*/
         static void Action1(SoccerLeagueContext context)
         {
             var standings = context.Teams
