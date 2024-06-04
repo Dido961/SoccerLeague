@@ -49,7 +49,26 @@ namespace SoccerLeague
                     Console.WriteLine($"{match.HomeTeam.Name} {match.HomeGoals} - {match.AwayGoals} {match.AwayTeam.Name}");
                 }
                 context.SaveChanges();
-                PrintStandings(context);
+                while (true)
+                {
+                    Console.Write("Select action (1, 2, 3). To continue forward without any action enter 'no act' -> ");
+                    string act = Console.ReadLine().ToLower();
+                    if (act == "1")
+                    {
+                        Action1(context);
+                    }
+                    else if (act == "2")
+                    {
+                      //  Action2(context);
+                    }
+                    else if (act == "3")
+                    {
+                      //  Action3(context);
+                    }
+                    else if (act == "no act") break;
+
+                }
+                
             }
         }
 
@@ -142,7 +161,7 @@ namespace SoccerLeague
             context.Teams.Update(awayTeam);
         }
 
-        static void PrintStandings(SoccerLeagueContext context)
+        static void Action1(SoccerLeagueContext context)
         {
             var standings = context.Teams
                 .OrderByDescending(t => t.Points)
@@ -153,7 +172,7 @@ namespace SoccerLeague
             Console.WriteLine("Standings:");
             foreach (var team in standings)
             {
-                Console.WriteLine($"{team.Name}: {team.Points} points, {team.GoalsFor} goals for, {team.GoalsAgainst} goals against");
+                Console.WriteLine($"{team.Name}: {team.GoalsFor} goals for, {team.GoalsAgainst} goals against, {team.Wins} wins, {team.Draws} draws, {team.Losses} losses, {team.Points} points,");
             }
         }
 
