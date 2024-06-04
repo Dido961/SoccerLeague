@@ -170,9 +170,10 @@ namespace SoccerLeague
                 .ToList();
 
             Console.WriteLine("Standings:");
+            int place = 1;
             foreach (var team in standings)
             {
-                Console.WriteLine($"{team.Name}: {team.GoalsFor} goals for, {team.GoalsAgainst} goals against, {team.Wins} wins, {team.Draws} draws, {team.Losses} losses, {team.Points} points,");
+                Console.WriteLine($"{team.Name} place: {place++},  {team.GoalsFor} goals for, {team.GoalsAgainst} goals against, {team.Wins} wins, {team.Draws} draws, {team.Losses} losses, {team.Points} points,");
             }
         }
 
