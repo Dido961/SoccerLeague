@@ -232,9 +232,6 @@ namespace SoccerLeague
             }
             Console.WriteLine("---------------------------------------------------------------------------------------------");
         }
-
-
-
         static void Action2(SoccerLeagueContext context)
         {
             var matchesRes = context.Matches
@@ -245,12 +242,28 @@ namespace SoccerLeague
                 .Take(5)
                 .ToList();
 
+            int cellWidth = 20;
+
             Console.WriteLine("Most Resultative Matches:");
+            Console.WriteLine(new string('-', cellWidth * 4 + 5));
+
+            Console.WriteLine(
+                $"|{CenterText("Home Team",cellWidth)}|{CenterText("Score",cellWidth)}|{CenterText("Away Team",cellWidth)}|{CenterText("Date",cellWidth)}|");
+            Console.WriteLine(new string('-', cellWidth * 4 + 5));
+
             foreach (var match in matchesRes)
             {
-                Console.WriteLine($"{match.HomeTeam.Name} {match.HomeGoals} - {match.AwayGoals} {match.AwayTeam.Name} | {match.Date}");
+                string homeTeamName = match.HomeTeam.Name.Replace("Team ", "").Replace("Manchester United", "Man United").Replace("Manchester City", "Man City");
+                string awayTeamName = match.AwayTeam.Name.Replace("Team ", "").Replace("Manchester United", "Man United").Replace("Manchester City", "Man City");
+                string score = $"{match.HomeGoals} - {match.AwayGoals}";
+                string date = match.Date.ToString("yyyy-MM-dd HH:mm:ss");
+
+                Console.WriteLine(
+                    $"|{CenterText(homeTeamName,cellWidth)}|{CenterText(score,cellWidth)}|{CenterText(awayTeamName,cellWidth)}|{CenterText(date,cellWidth)}|");
+                Console.WriteLine(new string('-', cellWidth * 4 + 5));
             }
-        }   
+        }
+
         static void Action3(SoccerLeagueContext context)
         {
             var teams = context.Teams.ToList();
@@ -261,22 +274,32 @@ namespace SoccerLeague
 
             int cellWidth = 11;
 
-            Console.Write("".PadRight(cellWidth));
+            // Print the header row
+            Console.Write("|".PadRight(cellWidth + 1)+"|");
             foreach (var team in teams)
             {
-                Console.Write(CenterText(team.Name.Replace("Team ", "").Replace("Manchester United", "MUT").Replace("Manchester City", "MCY").Substring(0, 3), cellWidth));
+                Console.Write(CenterText(team.Name.Replace("Team ", "").Replace("Manchester United", "MUT").Replace("Manchester City", "MCY").Substring(0, 3), cellWidth) + "|");
             }
             Console.WriteLine();
 
+            // Print the separator line
+            Console.Write("".PadRight(cellWidth + 12, '-'));
+            foreach (var team in teams)
+            {
+                Console.Write("".PadRight(cellWidth, '-'));
+            }
+            Console.WriteLine();
+
+            // Print each row
             foreach (var homeTeam in teams)
             {
-                Console.Write(CenterText(homeTeam.Name.Replace("Team ", "").Replace("Manchester United", "Man United").Replace("Manchester City", "Man City"), cellWidth));
+                Console.Write("|" + CenterText(homeTeam.Name.Replace("Team ", "").Replace("Manchester United", "Man United").Replace("Manchester City", "Man City"), cellWidth) + "|");
 
                 foreach (var awayTeam in teams)
                 {
                     if (homeTeam.TeamId == awayTeam.TeamId)
                     {
-                        Console.Write("".PadRight(cellWidth)); 
+                        Console.Write("".PadRight(cellWidth) + "|");
                         continue;
                     }
 
@@ -286,12 +309,20 @@ namespace SoccerLeague
                     if (match != null)
                     {
                         string result = $"{match.HomeGoals} - {match.AwayGoals}";
-                        Console.Write(CenterText(result, cellWidth));
+                        Console.Write(CenterText(result, cellWidth) + "|");
                     }
                     else
                     {
-                        Console.Write(CenterText("N/A", cellWidth)); 
+                        Console.Write(CenterText("N/A", cellWidth) + "|");
                     }
+                }
+                Console.WriteLine();
+
+                // Print the separator line
+                Console.Write("".PadRight(cellWidth + 12, '-'));
+                foreach (var team in teams)
+                {
+                    Console.Write("".PadRight(cellWidth, '-'));
                 }
                 Console.WriteLine();
             }
