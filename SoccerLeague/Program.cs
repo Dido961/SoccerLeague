@@ -224,11 +224,12 @@ namespace SoccerLeague
 
             Console.WriteLine("Standings:");
             Console.WriteLine("---------------------------------------------------------------------------------------------");
-            Console.WriteLine("|    Team Name     |  Points  |  Goals For  |  Goals Against  |  Wins  |  Draws  |  Losses  |");
+            Console.WriteLine($"| {CenterText("Team Name",20)} | {CenterText("Points",8)} | {CenterText("Goals For", 11)} | {CenterText("Goals Against", 11)} | {CenterText("Wins", 6)} | {CenterText("Draws", 7)} | {CenterText("Loses", 8)} |");
+            //Console.WriteLine("|      Team Name       |  Points  |  Goals For  |  Goals Against  |  Wins  |  Draws  |  Losses  |");
             Console.WriteLine("---------------------------------------------------------------------------------------------");
             foreach (var team in standings)
             {
-                Console.WriteLine($"| {team.Name.Replace("Team ", " ").Replace("Manchester City", "Man City").Replace("Manchester United", "Man United"),-16} | {team.Points,8} | {team.GoalsFor,11} | {team.GoalsAgainst,15} | {team.Wins,6} | {team.Draws,7} | {team.Losses,8} |");
+                Console.WriteLine($"| {CenterText(team.Name.Replace("Team ", " ").Replace("Manchester City", "Man City").Replace("Manchester United", "Man United"),20)} | {CenterText($"{team.Points}",8)} | {CenterText($"{team.GoalsFor}",11)} | {CenterText($"{team.GoalsAgainst}",11)} | {CenterText($"{team.Wins}",6)} | {CenterText($"{team.Draws}",7)} | {CenterText($"{team.Losses}", 8)} |");
             }
             Console.WriteLine("---------------------------------------------------------------------------------------------");
         }
