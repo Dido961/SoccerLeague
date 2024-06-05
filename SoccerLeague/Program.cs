@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace SoccerLeague
 {
+
     class Program
     {
         [DllImport("kernel32.dll", ExactSpelling = true)]
@@ -29,25 +30,32 @@ namespace SoccerLeague
                 context.Matches.RemoveRange(context.Matches);
                 DelTeamsData(context);
                 context.SaveChanges();
-                Console.WriteLine("Soccer League Simulator".ToUpper());
-                Console.WriteLine("Premier League tournament started. . .");
-                Console.WriteLine("Select fill mode (Manual/Automatic data fill): ");
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write("--------------------------------------------------------------- ");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.Write(" Soccer League Simulator ".ToUpper()); Console.ResetColor(); Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.WriteLine("---------------------------------------------------------------"); Console.ResetColor(); Thread.Sleep(2000);
+                Console.ForegroundColor = ConsoleColor.Cyan;
+                Console.WriteLine("Premier League tournament started. . ."); Thread.Sleep(1000); Console.WriteLine();
+                Console.WriteLine("Select fill mode (Manual/Automatic data fill): "); Thread.Sleep(1000);
                 while (true) 
                 {
                     Console.Write("Write 'auto' for auto fill or 'manual' for manual fill: ");
                     string mode = Console.ReadLine().ToLower();
                     if (mode == "manual")
                     {
-                        EditTeamManually(context); break;
+                        EditTeamManually(context); Thread.Sleep(1000); break; 
                     }
                     else if (mode == "auto")
                     {
-                        EditTeamAutomatically(context); break;
+                        EditTeamAutomatically(context); Thread.Sleep(1000); break;
                     }
                     
                 }
-                SimulateLeague(context);
-                context.Matches.RemoveRange(context.Matches);
+                Console.WriteLine();
+                Console.ResetColor();
+                SimulateLeague(context); 
+                context.Matches.RemoveRange(context.Matches); 
                 DelTeamsData(context);
                 context.SaveChanges();
             }
@@ -61,6 +69,7 @@ namespace SoccerLeague
             for (int round = 1; round <= matches.Count; round++)
             {
                 Console.WriteLine($"Round {round}");
+                Console.WriteLine();
                 foreach (var match in matches[round - 1])
                 {
                     context.Matches.Add(match);
@@ -93,8 +102,10 @@ namespace SoccerLeague
                         Console.Write("Press any key to exit the app . . .");
                         Console.ReadLine(); return;
                     }
+                    Console.WriteLine();
                     Console.Write("Select action (1, 2, 3). To continue forward without any action just hit enter -> ");
                     string act = Console.ReadLine().ToLower();
+                    Console.WriteLine();
                     if (act == "1")
                     {
                         Action1(context);
@@ -234,7 +245,6 @@ namespace SoccerLeague
             Console.WriteLine("Standings:");
             Console.WriteLine("---------------------------------------------------------------------------------------------");
             Console.WriteLine($"| {CenterText("Team Name",20)} | {CenterText("Points",8)} | {CenterText("Goals For", 11)} | {CenterText("Goals Against", 11)} | {CenterText("Wins", 6)} | {CenterText("Draws", 7)} | {CenterText("Loses", 8)} |");
-            //Console.WriteLine("|      Team Name       |  Points  |  Goals For  |  Goals Against  |  Wins  |  Draws  |  Losses  |");
             Console.WriteLine("---------------------------------------------------------------------------------------------");
             foreach (var team in standings)
             {
@@ -276,6 +286,7 @@ namespace SoccerLeague
 
         static void Action3(SoccerLeagueContext context)
         {
+           
             var teams = context.Teams.ToList();
             var matches = context.Matches
                 .Include(m => m.HomeTeam)
@@ -283,13 +294,14 @@ namespace SoccerLeague
                 .ToList();
 
             int cellWidth = 11;
-
+            Console.BackgroundColor = ConsoleColor.DarkGray;
             // Print the header row
             Console.Write("|".PadRight(cellWidth + 1)+"|");
             foreach (var team in teams)
             {
                 Console.Write(CenterText(team.Name.Replace("Team ", "").Replace("Manchester United", "MUT").Replace("Manchester City", "MCY").Substring(0, 3), cellWidth) + "|");
             }
+            Console.ResetColor();
             Console.WriteLine();
 
             // Print the separator line
@@ -309,7 +321,10 @@ namespace SoccerLeague
                 {
                     if (homeTeam.TeamId == awayTeam.TeamId)
                     {
-                        Console.Write("".PadRight(cellWidth) + "|");
+                        Console.BackgroundColor = ConsoleColor.Gray;
+                        Console.Write("".PadRight(cellWidth));
+                        Console.ResetColor();
+                        Console.Write("|");
                         continue;
                     }
 
@@ -319,7 +334,28 @@ namespace SoccerLeague
                     if (match != null)
                     {
                         string result = $"{match.HomeGoals} - {match.AwayGoals}";
-                        Console.Write(CenterText(result, cellWidth) + "|");
+                        if (match.HomeGoals > match.AwayGoals)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Black;
+                            Console.BackgroundColor = ConsoleColor.Green;
+                            Console.Write(CenterText(result, cellWidth));
+                            Console.ResetColor(); Console.Write("|");
+                        }
+                        else if (match.AwayGoals > match.HomeGoals)
+                        {
+                            Console.ForegroundColor = ConsoleColor.Black;
+                            Console.BackgroundColor = ConsoleColor.Red;
+                            Console.Write(CenterText(result, cellWidth));
+                            Console.ResetColor(); Console.Write("|");
+                        }
+                        else 
+                        {
+                            Console.ForegroundColor = ConsoleColor.Black;
+                            Console.BackgroundColor = ConsoleColor.Yellow;
+                            Console.Write(CenterText(result, cellWidth));
+                            Console.ResetColor(); Console.Write("|");
+                        }
+                        
                     }
                     else
                     {
@@ -336,6 +372,7 @@ namespace SoccerLeague
                 }
                 Console.WriteLine();
             }
+            Console.ResetColor();
         }
 
         static string CenterText(string text, int width)
@@ -402,8 +439,9 @@ namespace SoccerLeague
                 team.Points = team.Wins * 3 + team.Draws;
 
                 context.SaveChanges();
-                Console.WriteLine("Team updated automatically!");
+                
             }
+            Console.WriteLine("All teams updated automatically!");
         }
         static void DelTeamsData(SoccerLeagueContext context)
         {
