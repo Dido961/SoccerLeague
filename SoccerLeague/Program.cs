@@ -10,9 +10,18 @@ namespace SoccerLeague
 {
     class Program
     {
+        [DllImport("kernel32.dll", ExactSpelling = true)]
+        private static extern IntPtr GetConsoleWindow();
+
+        [DllImport("user32.dll")]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        private const int SW_MAXIMIZE = 3;
+            
         static void Main(string[] args)
         {
-
+            IntPtr handle = GetConsoleWindow();
+            ShowWindow(handle, SW_MAXIMIZE);
             var optionsBuilder = new DbContextOptionsBuilder<SoccerLeagueContext>();
             optionsBuilder.UseMySQL("Server=localhost;Database=soccerleaguedb;user=root;password=;");
             using (var context = new SoccerLeagueContext(optionsBuilder.Options))
