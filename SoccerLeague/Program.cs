@@ -61,7 +61,7 @@ namespace SoccerLeague
                 context.SaveChanges();
                 while (true)
                 {
-                    if (round == 9)
+                    if (round == matches.Count)
                     {
                         Thread.Sleep(2000);
                         Console.WriteLine("Premier League tournament ended!");
@@ -99,11 +99,14 @@ namespace SoccerLeague
                         Action3(context);
                     }
                     else if (act == "") break;
-                    
+
                 }
-                
+
             }
         }
+
+
+       
 
         static SoccerLeague.Models.Match GenerateMatch(Team homeTeam, Team awayTeam)
         {
@@ -126,11 +129,12 @@ namespace SoccerLeague
             };
         }
 
+        
         static List<List<SoccerLeague.Models.Match>> GenerateRoundRobin(List<Team> teams)
         {
             if (teams.Count % 2 != 0)
             {
-                teams.Add(new Team { Name = "BYE" }); // Add a dummy team if the number of teams is odd
+                teams.Add(new Team { Name = "BYE" }); 
             }
 
             int numTeams = teams.Count;
@@ -144,6 +148,7 @@ namespace SoccerLeague
                 {
                     int home = (round + i) % (numTeams - 1);
                     int away = (numTeams - 1 - i + round) % (numTeams - 1);
+
                     if (i == 0)
                     {
                         away = numTeams - 1;
@@ -157,8 +162,24 @@ namespace SoccerLeague
                 rounds.Add(roundMatches);
             }
 
+            
+            List<List<SoccerLeague.Models.Match>> secondHalfRounds = new List<List<SoccerLeague.Models.Match>>();
+            foreach (var round in rounds)
+            {
+                List<SoccerLeague.Models.Match> secondHalfRound = new List<SoccerLeague.Models.Match>();
+                foreach (var match in round)
+                {
+                    secondHalfRound.Add(GenerateMatch(match.AwayTeam, match.HomeTeam));
+                }
+                secondHalfRounds.Add(secondHalfRound);
+            }
+
+            rounds.AddRange(secondHalfRounds);
+
             return rounds;
         }
+
+
 
         static void UpdateTeamStats(SoccerLeague.Models.Match match, SoccerLeagueContext context)
         {
@@ -238,10 +259,9 @@ namespace SoccerLeague
                 .Include(m => m.AwayTeam)
                 .ToList();
 
-            int cellWidth = 11; // Width of each cell
+            int cellWidth = 11;
 
-            // Header row
-            Console.Write("".PadRight(cellWidth)); // Top-left corner cell
+            Console.Write("".PadRight(cellWidth));
             foreach (var team in teams)
             {
                 Console.Write(CenterText(team.Name.Replace("Team ", "").Replace("Manchester United", "MUT").Replace("Manchester City", "MCY").Substring(0, 3), cellWidth));
@@ -250,14 +270,13 @@ namespace SoccerLeague
 
             foreach (var homeTeam in teams)
             {
-                // Row header
                 Console.Write(CenterText(homeTeam.Name.Replace("Team ", "").Replace("Manchester United", "Man United").Replace("Manchester City", "Man City"), cellWidth));
 
                 foreach (var awayTeam in teams)
                 {
                     if (homeTeam.TeamId == awayTeam.TeamId)
                     {
-                        Console.Write("".PadRight(cellWidth)); // Skip same team comparison
+                        Console.Write("".PadRight(cellWidth)); 
                         continue;
                     }
 
@@ -271,7 +290,7 @@ namespace SoccerLeague
                     }
                     else
                     {
-                        Console.Write(CenterText("N/A", cellWidth)); // No match found
+                        Console.Write(CenterText("N/A", cellWidth)); 
                     }
                 }
                 Console.WriteLine();
