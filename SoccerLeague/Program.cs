@@ -48,7 +48,9 @@ namespace SoccerLeague
                     }
                     else if (mode == "auto")
                     {
-                        EditTeamAutomatically(context); Thread.Sleep(1000); break;
+                        EditTeamAutomatically(context); Thread.Sleep(1000);
+                        DelTeamsData(context);
+                        break;
                     }
                     
                 }
@@ -68,7 +70,8 @@ namespace SoccerLeague
 
             for (int round = 1; round <= matches.Count; round++)
             {
-                Console.WriteLine($"Round {round}");
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"Round {round}".ToUpper()); Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine();
                 foreach (var match in matches[round - 1])
                 {
@@ -81,6 +84,8 @@ namespace SoccerLeague
                 {
                     if (round == matches.Count)
                     {
+                        Console.WriteLine("\n");
+                        Console.ForegroundColor = ConsoleColor.Cyan;
                         Thread.Sleep(2000);
                         Console.WriteLine("Premier League tournament ended!");
                         Thread.Sleep(2000);
@@ -88,24 +93,25 @@ namespace SoccerLeague
                         Console.Write("Loading final result . . .");
                         Console.WriteLine(); Console.WriteLine();
                         Thread.Sleep(3000);
-                        Action1(context); Console.WriteLine(); Console.WriteLine(); Console.Write("Loading next results . . .");
+                        Action1(context); Console.WriteLine(); Console.WriteLine(); Console.ForegroundColor = ConsoleColor.Cyan;  Console.Write("Loading next results . . .");
                         Console.WriteLine(); Console.WriteLine();
                         Thread.Sleep(5000);
-                        Action2(context); Console.WriteLine(); Console.WriteLine(); Console.Write("Loading next results . . .");
+                        Action2(context); Console.WriteLine(); Console.WriteLine(); Console.ForegroundColor = ConsoleColor.Cyan;  Console.Write("Loading next results . . .");
                         Console.WriteLine(); Console.WriteLine();
-                        Thread.Sleep(5000);
-                        Action3(context); Console.WriteLine(); Console.WriteLine(); Console.Write("Loading next results . . .");
+                        Thread.Sleep(5000); Console.ResetColor();
+                        Action3(context); Console.WriteLine(); Console.WriteLine(); Console.ForegroundColor = ConsoleColor.Cyan;  Console.Write("Loading next results . . .");
                         Console.WriteLine(); Console.WriteLine();
                         Thread.Sleep(2000);
                         Console.WriteLine(); Console.WriteLine();
-                        Thread.Sleep(1000);
-                        Console.Write("Press any key to exit the app . . .");
-                        Console.ReadLine(); return;
+                        Thread.Sleep(1000); Console.ForegroundColor = ConsoleColor.Red;
+                        return;
                     }
                     Console.WriteLine();
+                    Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.Write("Select action (1, 2, 3). To continue forward without any action just hit enter -> ");
                     string act = Console.ReadLine().ToLower();
                     Console.WriteLine();
+                    Console.ResetColor();
                     if (act == "1")
                     {
                         Action1(context);
@@ -122,13 +128,15 @@ namespace SoccerLeague
 
                 }
 
+
             }
+            Console.ResetColor();
         }
 
 
-       
 
-        static SoccerLeague.Models.Match GenerateMatch(Team homeTeam, Team awayTeam)
+
+        /*static SoccerLeague.Models.Match GenerateMatch(Team homeTeam, Team awayTeam)
         {
             Random rand = new Random();
             int homeGoals = rand.Next(0, 6);
@@ -147,9 +155,33 @@ namespace SoccerLeague
                 AwayGoals = awayGoals,
                 Date = DateTime.Now
             };
+        }*/
+        static SoccerLeague.Models.Match GenerateMatch(Team homeTeam, Team awayTeam)
+        {
+            Random rand = new Random();
+            int homeGoals = rand.Next(0, 6);
+            int awayGoals = rand.Next(0, 5);
+
+            if (homeTeam.IsGrand && rand.NextDouble() < 0.5)
+                homeGoals++;
+            if (awayTeam.IsGrand && rand.NextDouble() < 0.5)
+                awayGoals++;
+
+            DateTime startDate = new DateTime(2024, 1, 1);
+            DateTime endDate = DateTime.Now < new DateTime(2025, 1, 1) ? DateTime.Now : new DateTime(2024, 12, 31);
+            int range = (endDate - startDate).Days;
+            DateTime randomDate = startDate.AddDays(rand.Next(range)).AddHours(rand.Next(0, 24)).AddMinutes(rand.Next(0, 60)).AddSeconds(rand.Next(0, 60));
+
+            return new SoccerLeague.Models.Match
+            {
+                HomeTeam = homeTeam,
+                AwayTeam = awayTeam,
+                HomeGoals = homeGoals,
+                AwayGoals = awayGoals,
+                Date = randomDate
+            };
         }
 
-        
         static List<List<SoccerLeague.Models.Match>> GenerateRoundRobin(List<Team> teams)
         {
             if (teams.Count % 2 != 0)
@@ -241,8 +273,9 @@ namespace SoccerLeague
                 .ThenByDescending(t => t.GoalsFor - t.GoalsAgainst)
                 .ThenByDescending(t => t.GoalsFor)
                 .ToList();
-
+            Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("Standings:");
+            Console.ResetColor();
             Console.WriteLine("---------------------------------------------------------------------------------------------");
             Console.WriteLine($"| {CenterText("Team Name",20)} | {CenterText("Points",8)} | {CenterText("Goals For", 11)} | {CenterText("Goals Against", 11)} | {CenterText("Wins", 6)} | {CenterText("Draws", 7)} | {CenterText("Loses", 8)} |");
             Console.WriteLine("---------------------------------------------------------------------------------------------");
@@ -263,8 +296,8 @@ namespace SoccerLeague
                 .ToList();
 
             int cellWidth = 20;
-
-            Console.WriteLine("Most Resultative Matches:");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("Most Resultative Matches:"); Console.ResetColor();
             Console.WriteLine(new string('-', cellWidth * 4 + 5));
 
             Console.WriteLine(
