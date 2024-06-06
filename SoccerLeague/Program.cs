@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Org.BouncyCastle.Bcpg;
 using SoccerLeague.Data;
 using SoccerLeague.Models;
 using System;
@@ -59,7 +60,7 @@ namespace SoccerLeague
                 SimulateLeague(context); 
                 context.Matches.RemoveRange(context.Matches); 
                 DelTeamsData(context);
-                context.SaveChanges();
+                context.SaveChanges(); 
             }
         }
 
@@ -70,16 +71,20 @@ namespace SoccerLeague
 
             for (int round = 1; round <= matches.Count; round++)
             {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine($"Round {round}".ToUpper()); Console.ForegroundColor = ConsoleColor.Green;
+                Console.ForegroundColor = ConsoleColor.DarkRed;
+                Console.WriteLine($"Round {round}".ToUpper());
                 Console.WriteLine();
                 foreach (var match in matches[round - 1])
                 {
                     context.Matches.Add(match);
                     UpdateTeamStats(match, context);
+                    if(match.HomeGoals>match.AwayGoals)Console.ForegroundColor = ConsoleColor.Green;
+                    else if (match.AwayGoals>match.HomeGoals) Console.ForegroundColor = ConsoleColor.Red;
+                    else Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine($"{match.HomeTeam.Name} {match.HomeGoals} - {match.AwayGoals} {match.AwayTeam.Name}");
                 }
                 context.SaveChanges();
+                Console.ResetColor();
                 while (true)
                 {
                     if (round == matches.Count)
@@ -89,21 +94,22 @@ namespace SoccerLeague
                         Thread.Sleep(2000);
                         Console.WriteLine("Premier League tournament ended!");
                         Thread.Sleep(2000);
-                        Console.WriteLine(); Console.WriteLine();
+                        Console.WriteLine("\n");
                         Console.Write("Loading final result . . .");
-                        Console.WriteLine(); Console.WriteLine();
+                        Console.WriteLine("\n");
                         Thread.Sleep(3000);
-                        Action1(context); Console.WriteLine(); Console.WriteLine(); Console.ForegroundColor = ConsoleColor.Cyan;  Console.Write("Loading next results . . .");
-                        Console.WriteLine(); Console.WriteLine();
+                        Action1(context); Console.WriteLine("\n"); Console.ForegroundColor = ConsoleColor.Cyan;  Console.Write("Loading next results . . .");
+                        Console.WriteLine("\n");
                         Thread.Sleep(5000);
-                        Action2(context); Console.WriteLine(); Console.WriteLine(); Console.ForegroundColor = ConsoleColor.Cyan;  Console.Write("Loading next results . . .");
-                        Console.WriteLine(); Console.WriteLine();
+                        Action2(context); Console.WriteLine("\n"); Console.ForegroundColor = ConsoleColor.Cyan;  Console.Write("Loading next results . . .");
+                        Console.WriteLine("\n");
                         Thread.Sleep(5000); Console.ResetColor();
-                        Action3(context); Console.WriteLine(); Console.WriteLine(); Console.ForegroundColor = ConsoleColor.Cyan;  Console.Write("Loading next results . . .");
-                        Console.WriteLine(); Console.WriteLine();
+                        Action3(context); Console.WriteLine("\n"); 
+                        Console.WriteLine("\n");
                         Thread.Sleep(2000);
-                        Console.WriteLine(); Console.WriteLine();
-                        Thread.Sleep(1000); Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("\n");
+                        Thread.Sleep(1000);
+                        Console.ForegroundColor = ConsoleColor.Red;            
                         return;
                     }
                     Console.WriteLine();
@@ -133,34 +139,11 @@ namespace SoccerLeague
             Console.ResetColor();
         }
 
-
-
-
-        /*static SoccerLeague.Models.Match GenerateMatch(Team homeTeam, Team awayTeam)
-        {
-            Random rand = new Random();
-            int homeGoals = rand.Next(0, 6);
-            int awayGoals = rand.Next(0, 5);
-
-            if (homeTeam.IsGrand && rand.NextDouble() < 0.5)
-                homeGoals++;
-            if (awayTeam.IsGrand && rand.NextDouble() < 0.5)
-                awayGoals++;
-
-            return new SoccerLeague.Models.Match
-            {
-                HomeTeam = homeTeam,
-                AwayTeam = awayTeam,
-                HomeGoals = homeGoals,
-                AwayGoals = awayGoals,
-                Date = DateTime.Now
-            };
-        }*/
         static SoccerLeague.Models.Match GenerateMatch(Team homeTeam, Team awayTeam)
         {
             Random rand = new Random();
-            int homeGoals = rand.Next(0, 6);
-            int awayGoals = rand.Next(0, 5);
+            int homeGoals = rand.Next(0, 5);
+            int awayGoals = rand.Next(0, 4);
 
             if (homeTeam.IsGrand && rand.NextDouble() < 0.5)
                 homeGoals++;
