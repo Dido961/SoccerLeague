@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jun 03, 2024 at 10:31 PM
+-- Generation Time: Jun 12, 2024 at 10:26 AM
 -- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- PHP Version: 8.2.12
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -60,7 +60,7 @@ CREATE TABLE `teams` (
 
 INSERT INTO `teams` (`TeamId`, `Name`, `IsGrand`, `GoalsFor`, `GoalsAgainst`, `Wins`, `Draws`, `Losses`, `Points`) VALUES
 (1, 'Team Arsenal', 1, 0, 0, 0, 0, 0, 0),
-(2, 'Team Southampton', 1, 0, 0, 0, 0, 0, 0),
+(2, 'Barnsley', 1, 0, 0, 0, 0, 0, 0),
 (3, 'Team Aston Villa', 0, 0, 0, 0, 0, 0, 0),
 (4, 'Team Barnsley', 0, 0, 0, 0, 0, 0, 0),
 (5, 'Team Brentford', 0, 0, 0, 0, 0, 0, 0),
@@ -96,7 +96,7 @@ ALTER TABLE `teams`
 -- AUTO_INCREMENT for table `matches`
 --
 ALTER TABLE `matches`
-  MODIFY `MatchId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=811;
+  MODIFY `MatchId` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=496;
 
 --
 -- AUTO_INCREMENT for table `teams`
